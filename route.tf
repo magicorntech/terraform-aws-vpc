@@ -7,6 +7,7 @@ resource "aws_default_route_table" "main_default" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
@@ -29,6 +30,7 @@ resource "aws_route_table" "main_pbl" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
@@ -52,6 +54,7 @@ resource "aws_route_table" "main_pvt" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
@@ -75,6 +78,7 @@ resource "aws_route_table" "main_eks" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
@@ -93,6 +97,7 @@ resource "aws_route_table" "main_db" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }

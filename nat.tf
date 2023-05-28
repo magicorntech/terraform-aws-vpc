@@ -13,6 +13,7 @@ resource "aws_eip" "nat_gateway" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
@@ -35,6 +36,7 @@ resource "aws_nat_gateway" "main" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }

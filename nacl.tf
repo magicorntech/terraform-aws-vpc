@@ -26,6 +26,7 @@ resource "aws_network_acl" "main_pbl" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
@@ -59,6 +60,7 @@ resource "aws_network_acl" "main_pvt" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
@@ -92,6 +94,7 @@ resource "aws_network_acl" "main_eks" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
@@ -125,6 +128,7 @@ resource "aws_network_acl" "main_db" {
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
+    Maintainer  = "Magicorn"
     Terraform   = "yes"
   }
 }
