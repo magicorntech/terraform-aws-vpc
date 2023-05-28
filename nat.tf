@@ -5,7 +5,7 @@ resource "aws_eip" "nat_gateway" {
   depends_on = [aws_internet_gateway.main]
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 
   tags = {
