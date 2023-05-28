@@ -1,4 +1,4 @@
-##### Create NAT Gateway
+##### Create NAT IPs
 resource "aws_eip" "nat_gateway" {
   count      = (var.single_az_nat == true) ? 1 : length(var.pbl_sub_count)
   vpc        = true
@@ -17,6 +17,10 @@ resource "aws_eip" "nat_gateway" {
   }
 }
 
+##### Use existing NAT IPs
+
+
+##### Create NAT Gateway
 resource "aws_nat_gateway" "main" {
   count         = (var.single_az_nat == true) ? 1 : length(var.pbl_sub_count)
   allocation_id = element(aws_eip.nat_gateway.*.id, count.index)

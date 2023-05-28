@@ -13,3 +13,11 @@ output "pbl_subnet_ids" {
 output "pvt_subnet_ids" {
 	value = aws_subnet.main_pvt.*.id
 }
+
+output "eks_subnet_ids" {
+	value = aws_subnet.main_eks.*.id
+}
+
+output "db_subnet_ids" {
+	value = aws_subnet.main_db.*.id
+}

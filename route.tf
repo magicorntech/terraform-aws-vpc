@@ -13,7 +13,7 @@ resource "aws_default_route_table" "main_default" {
 
 ##### Create Public Route Table
 resource "aws_route_table" "main_pbl" {
-  vpc_id       = aws_vpc.main.id
+  vpc_id = aws_vpc.main.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -35,7 +35,7 @@ resource "aws_route_table" "main_pbl" {
 
 ##### Create Private Route Table
 resource "aws_route_table" "main_pvt" {
-  count  = (var.single_az_nat == true) ? 1 : length(var.pbl_sub_count)
+  count  = local.nat_count
   vpc_id = aws_vpc.main.id
 
   route {
@@ -56,6 +56,47 @@ resource "aws_route_table" "main_pvt" {
   }
 }
 
+##### Create EKS Route Table
+resource "aws_route_table" "main_eks" {
+  count  = local.nat_count
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = element(aws_nat_gateway.main.*.id, count.index)
+  }
+
+  lifecycle {
+    ignore_changes = [route]
+  }
+
+  tags = {
+    Name        = "${var.tenant}-${var.name}-eks-route-${var.environment}"
+    Tenant      = var.tenant
+    Project     = var.name
+    Environment = var.environment
+    Terraform   = "yes"
+  }
+}
+
+##### Create DB Route Table
+resource "aws_route_table" "main_db" {
+  count  = (length(var.db_sub_count) > 0) ? 1 : 0
+  vpc_id = aws_vpc.main.id
+
+  lifecycle {
+    ignore_changes = [route]
+  }
+
+  tags = {
+    Name        = "${var.tenant}-${var.name}-db-route-${var.environment}"
+    Tenant      = var.tenant
+    Project     = var.name
+    Environment = var.environment
+    Terraform   = "yes"
+  }
+}
+
 ##### Route Table Association for Public Subnets
 resource "aws_route_table_association" "main_pbl_route_association" {
   count          = length(var.pbl_sub_count)
@@ -68,4 +109,18 @@ resource "aws_route_table_association" "main_pvt_route_association" {
   count          = length(var.pvt_sub_count)
   subnet_id      = element(aws_subnet.main_pvt.*.id, count.index)
   route_table_id = element(aws_route_table.main_pvt.*.id, count.index)
+}
+
+##### Route Table Association for EKS Subnets
+resource "aws_route_table_association" "main_eks_route_association" {
+  count          = length(var.eks_sub_count)
+  subnet_id      = element(aws_subnet.main_eks.*.id, count.index)
+  route_table_id = element(aws_route_table.main_eks.*.id, count.index)
+}
+
+##### Route Table Association for DB Subnets
+resource "aws_route_table_association" "main_db_route_association" {
+  count          = length(var.db_sub_count)
+  subnet_id      = element(aws_subnet.main_db.*.id, count.index)
+  route_table_id = aws_route_table.main_db[0].id
 }
