@@ -1,11 +1,11 @@
 ##### Create NAT IPs
 resource "aws_eip" "nat_gateway" {
-  count      = (var.single_az_nat == true) ? 1 : length(var.pbl_sub_count)
+  count      = (lookup(var.pbl_sub_count[0], "eip") == "") ? local.nat_count : 0
   vpc        = true
   depends_on = [aws_internet_gateway.main]
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 
   tags = {
@@ -18,12 +18,15 @@ resource "aws_eip" "nat_gateway" {
 }
 
 ##### Use existing NAT IPs
-
+data "aws_eip" "nat_gateway" {
+  count = (lookup(var.pbl_sub_count[0], "eip") == "") ? 0 : local.nat_count
+  id    = lookup(var.pbl_sub_count[count.index], "eip")
+}
 
 ##### Create NAT Gateway
 resource "aws_nat_gateway" "main" {
-  count         = (var.single_az_nat == true) ? 1 : length(var.pbl_sub_count)
-  allocation_id = element(aws_eip.nat_gateway.*.id, count.index)
+  count         = local.nat_count
+  allocation_id = (lookup(var.pbl_sub_count[0], "eip") == "") ? element(aws_eip.nat_gateway.*.id, count.index) : element(data.aws_eip.nat_gateway.*.id, count.index)
   subnet_id     = element(aws_subnet.main_pbl.*.id, count.index)
   depends_on    = [aws_internet_gateway.main]
 
