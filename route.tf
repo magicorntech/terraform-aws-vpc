@@ -37,7 +37,7 @@ resource "aws_route_table" "main_pbl" {
 
 ##### Create Private Route Table
 resource "aws_route_table" "main_pvt" {
-  count  = local.nat_count
+  count  = (length(var.pvt_sub_count) > 0) ? local.nat_count : 0
   vpc_id = aws_vpc.main.id
 
   route {
@@ -61,7 +61,7 @@ resource "aws_route_table" "main_pvt" {
 
 ##### Create EKS Route Table
 resource "aws_route_table" "main_eks" {
-  count  = local.nat_count
+  count  = (length(var.eks_sub_count) > 0) ? local.nat_count : 0
   vpc_id = aws_vpc.main.id
 
   route {
