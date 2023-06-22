@@ -7,13 +7,13 @@ resource "aws_subnet" "main_pbl" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                   = "${var.tenant}-${var.name}-snet-pbl-${lookup(var.pbl_sub_count[count.index], "zone")}-${var.environment}"
-    Tenant                 = var.tenant
-    Project                = var.name
-    Environment            = var.environment
-    Maintainer             = "Magicorn"
-    Terraform              = "yes"
-    kubernetes.io/role/elb = 1
+    Name                     = "${var.tenant}-${var.name}-snet-pbl-${lookup(var.pbl_sub_count[count.index], "zone")}-${var.environment}"
+    Tenant                   = var.tenant
+    Project                  = var.name
+    Environment              = var.environment
+    Maintainer               = "Magicorn"
+    Terraform                = "yes"
+    "kubernetes.io/role/elb" = 1
   }
 }
 
@@ -26,13 +26,13 @@ resource "aws_subnet" "main_pvt" {
   map_public_ip_on_launch = false
 
   tags = {
-    Name                            = "${var.tenant}-${var.name}-snet-pvt-${lookup(var.pvt_sub_count[count.index], "zone")}-${var.environment}"
-    Tenant                          = var.tenant
-    Project                         = var.name
-    Environment                     = var.environment
-    Maintainer                      = "Magicorn"
-    Terraform                       = "yes"
-    kubernetes.io/role/internal-elb = 1
+    Name                              = "${var.tenant}-${var.name}-snet-pvt-${lookup(var.pvt_sub_count[count.index], "zone")}-${var.environment}"
+    Tenant                            = var.tenant
+    Project                           = var.name
+    Environment                       = var.environment
+    Maintainer                        = "Magicorn"
+    Terraform                         = "yes"
+    "kubernetes.io/role/internal-elb" = 1
   }
 }
 
