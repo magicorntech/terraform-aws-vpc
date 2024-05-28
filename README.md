@@ -13,8 +13,8 @@ module "vpc" {
   # VPC Configuration
   cidr_block    = "10.1.0.0/16"
   single_az_nat = false
-  vpc_flow_log  = false
-  vpc_fl_s3_exp = false #(if false only "CloudWatch Logging" is enabled for flow logs, otherwise exports flow logs to s3 too)
+  vpc_fl_cw_log = false (if true cloudwatch logging is enabled)
+  vpc_fl_s3_exp = false (if true s3 logging is enabled)
   pbl_sub_count = [
     {cidr="10.1.8.0/21", zone="b", eip=""}, # 1
     {cidr="10.1.16.0/21", zone="c", eip=""} # 1

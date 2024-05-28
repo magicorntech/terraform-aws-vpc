@@ -1,6 +1,6 @@
 #Create flow log with CloudWatch Log Group as target
 resource "aws_flow_log" "main_cloudwatch" {
-  count                    = var.vpc_flow_log == true ? 1 : 0
+  count                    = var.vpc_fl_cw_log == true ? 1 : 0
   vpc_id                   = aws_vpc.main.id
   iam_role_arn             = aws_iam_role.main_cloudwatch[0].arn
   log_destination          = aws_cloudwatch_log_group.main[0].arn
@@ -20,7 +20,7 @@ resource "aws_flow_log" "main_cloudwatch" {
 
 # Create Cloudwatch Log Group to collect VPC flow logs
 resource "aws_cloudwatch_log_group" "main" {
-  count             = var.vpc_flow_log == true ? 1 : 0
+  count             = var.vpc_fl_cw_log == true ? 1 : 0
   name              = "${var.tenant}-${var.name}-${aws_vpc.main.id}-log-group-${var.environment}"
   retention_in_days = 7
 
@@ -36,8 +36,9 @@ resource "aws_cloudwatch_log_group" "main" {
   skip_destroy = true
 }
 
+# IAM Roles for Creating Flow Logs
 resource "aws_iam_role" "main_cloudwatch" {
-  count = var.vpc_flow_log == true ? 1 : 0
+  count = var.vpc_fl_cw_log == true || var.vpc_fl_s3_exp == true ? 1 : 0 
   name  = "${var.tenant}-${var.name}-vpc-fl-${aws_vpc.main.id}-cw-role-${var.environment}"
 
   tags = {
@@ -67,7 +68,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "main_cloudwatch" {
-  count  = var.vpc_flow_log == true ? 1 : 0
+  count  = var.vpc_fl_cw_log == true || var.vpc_fl_s3_exp == true ? 1 : 0
   name   = "${var.tenant}-${var.name}-vpc-fl-${aws_vpc.main.id}-cw-policy-${var.environment}"
   role   = aws_iam_role.main_cloudwatch[0].id
   policy = <<EOF
@@ -97,7 +98,7 @@ resource "random_id" "s3" {
 }
 
 resource "aws_s3_bucket" "main" {
-  count         = var.vpc_flow_log == true && var.vpc_fl_s3_exp == true ? 1 : 0
+  count         = var.vpc_fl_s3_exp == true ? 1 : 0
   bucket        = "${var.tenant}-${var.name}-vpc-flow-logs-${random_id.s3.hex}-${var.environment}"
   force_destroy = false
 
@@ -113,7 +114,7 @@ resource "aws_s3_bucket" "main" {
 
 #Create flow log with s3 as target
 resource "aws_flow_log" "main_s3" {
-  count                    = var.vpc_flow_log == true && var.vpc_fl_s3_exp == true ? 1 : 0
+  count                    = var.vpc_fl_s3_exp == true ? 1 : 0
   vpc_id                   = aws_vpc.main.id
   log_destination          = aws_s3_bucket.main[0].arn
   log_destination_type     = "s3"
