@@ -21,11 +21,15 @@ resource "aws_flow_log" "main_cloudwatch" {
 # Create Cloudwatch Log Group to collect VPC flow logs
 resource "aws_cloudwatch_log_group" "main" {
   count             = var.vpc_fl_cw_log == true ? 1 : 0
-  name              = "${var.tenant}-${var.name}-${aws_vpc.main.id}-log-group-${var.environment}"
+  name              = "${var.tenant}-${var.name}-${aws_vpc.main.id}-fl-group-${var.environment}"
   retention_in_days = 7
 
+  lifecycle {
+    prevent_destroy = true
+  }
+
   tags = {
-    Name        = "${var.tenant}-${var.name}-${aws_vpc.main.id}-log-group-${var.environment}"
+    Name        = "${var.tenant}-${var.name}-${aws_vpc.main.id}-fl-group-${var.environment}"
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
@@ -33,7 +37,6 @@ resource "aws_cloudwatch_log_group" "main" {
     Terraform   = "yes"
 
   }
-  skip_destroy = true
 }
 
 # IAM Roles for Creating Flow Logs
@@ -93,17 +96,13 @@ EOF
 
 
 # Create S3 Bucker to collect Flow Logs in a S3 Bucket
-resource "random_id" "s3" {
-  byte_length = 4
-}
-
 resource "aws_s3_bucket" "main" {
   count         = var.vpc_fl_s3_exp == true ? 1 : 0
-  bucket        = "${var.tenant}-${var.name}-vpc-flow-logs-${random_id.s3.hex}-${var.environment}"
+  bucket        = "${var.tenant}-${var.name}-vpc-fl-${random_id.s3[0].hex}-${var.environment}"
   force_destroy = false
 
   tags = {
-    Name        = "${var.tenant}-${var.name}-vpc-flow-logs-${var.environment}"
+    Name        = "${var.tenant}-${var.name}-vpc-fl-${var.environment}"
     Tenant      = var.tenant
     Project     = var.name
     Environment = var.environment
@@ -112,7 +111,7 @@ resource "aws_s3_bucket" "main" {
   }
 }
 
-#Create flow log with s3 as target
+# Create flow log with s3 as target
 resource "aws_flow_log" "main_s3" {
   count                    = var.vpc_fl_s3_exp == true ? 1 : 0
   vpc_id                   = aws_vpc.main.id
