@@ -5,7 +5,7 @@ Magicorn made Terraform Module for AWS Provider
 ```
 module "vpc" {
   source      = "magicorntech/vpc/aws"
-  version     = "0.0.9"
+  version     = "0.1.0"
   tenant      = var.tenant
   name        = var.name
   environment = var.environment
@@ -14,7 +14,14 @@ module "vpc" {
   cidr_block    = "10.1.0.0/16"
   vpc_fl_cw_log = false (if true cloudwatch logging is enabled)
   vpc_fl_s3_exp = false (if true s3 logging is enabled)
-  single_az_nat = false
+  nat_gateway   = false
+  nat_count     = 2
+
+  # If != nat_gateway
+  nat_instance  = "c6gn.large"
+  nat_ami       = "ami-059f069ff80edb269" # use AL2023 latest image
+
+  # Subnet Mapping
   pbl_sub_count = [
     {cidr="10.1.8.0/21", zone="b", eip=""}, # 1
     {cidr="10.1.16.0/21", zone="c", eip=""} # 1

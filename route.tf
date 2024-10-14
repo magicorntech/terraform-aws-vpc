@@ -37,12 +37,25 @@ resource "aws_route_table" "main_pbl" {
 
 ##### Create Private Route Table
 resource "aws_route_table" "main_pvt" {
-  count  = (length(var.pvt_sub_count) > 0) ? local.nat_count : 0
+  count  = (length(var.pvt_sub_count) > 0) ? var.nat_count : 0
   vpc_id = aws_vpc.main.id
 
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = element(aws_nat_gateway.main.*.id, count.index)
+  dynamic "route" {
+    for_each = (var.nat_gateway == true) ? [true] : []
+
+    content {
+      cidr_block     = "0.0.0.0/0"
+      nat_gateway_id = element(aws_nat_gateway.main.*.id, count.index)
+    }
+  }
+
+  dynamic "route" {
+    for_each = (var.nat_gateway != true) ? [true] : []
+
+    content {
+      cidr_block           = "0.0.0.0/0"
+      network_interface_id = element(module.ec2-nat.*.primary_nic, count.index)
+    }
   }
 
   lifecycle {
@@ -61,12 +74,25 @@ resource "aws_route_table" "main_pvt" {
 
 ##### Create EKS Route Table
 resource "aws_route_table" "main_eks" {
-  count  = (length(var.eks_sub_count) > 0) ? local.nat_count : 0
+  count  = (length(var.eks_sub_count) > 0) ? var.nat_count : 0
   vpc_id = aws_vpc.main.id
 
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = element(aws_nat_gateway.main.*.id, count.index)
+  dynamic "route" {
+    for_each = (var.nat_gateway == true) ? [true] : []
+
+    content {
+      cidr_block     = "0.0.0.0/0"
+      nat_gateway_id = element(aws_nat_gateway.main.*.id, count.index)
+    }
+  }
+
+  dynamic "route" {
+    for_each = (var.nat_gateway != true) ? [true] : []
+
+    content {
+      cidr_block           = "0.0.0.0/0"
+      network_interface_id = element(module.ec2-nat.*.primary_nic, count.index)
+    }
   }
 
   lifecycle {
