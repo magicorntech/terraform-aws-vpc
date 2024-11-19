@@ -45,7 +45,7 @@ resource "aws_nat_gateway" "main" {
 module "ec2-nat" {
   count       = (var.nat_gateway == true) ? 0 : var.nat_count
   source      = "magicorntech/ec2-instance/aws"
-  version     = "0.0.5"
+  version     = "0.0.6"
   tenant      = var.tenant
   name        = var.name
   environment = var.environment

@@ -5,7 +5,7 @@ Magicorn made Terraform Module for AWS Provider
 ```
 module "vpc" {
   source      = "magicorntech/vpc/aws"
-  version     = "0.1.0"
+  version     = "0.1.1"
   tenant      = var.tenant
   name        = var.name
   environment = var.environment
